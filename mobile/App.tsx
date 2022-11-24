@@ -1,24 +1,38 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, TextInput, View, StatusBar, Text} from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import io from 'socket.io-client'
+import io, {Socket} from 'socket.io-client'
 
 const App = () => {
   StatusBar.setBackgroundColor(Colors.lighter);
   StatusBar.setBarStyle('dark-content');
+
+  const [message, setMessage] = useState('');
+  const [socket, setSocket] = useState<Socket | undefined>(undefined);
 
   useEffect(() => {
     const socket = io('http://localhost:3000');
     socket.on('connect', () => {
       console.log('connected');
     });
+    setSocket(socket)
   }, [])
+
+  const sendMessage = () => {
+    if (!socket) return
+    socket.emit('chat message', message);
+    setMessage('');
+  }
   return (
     <SafeAreaView>
       <ScrollView style={styles.scrollView}>
         <View style={styles.input}>
-          <TextInput style={styles.textInput}/>
-          <TouchableOpacity style={styles.sendBtn}>
+          <TextInput style={styles.textInput} 
+                     onChangeText={chatmessage => {setMessage(chatmessage)}}
+                     onSubmitEditing={sendMessage}
+                     value={message}
+                     />
+          <TouchableOpacity style={styles.sendBtn} onPress={sendMessage}>
             <Text style={styles.text}>Enviar</Text>
           </TouchableOpacity>
         </View>
@@ -31,29 +45,39 @@ const styles = StyleSheet.create({
   input: {
     // backgroundColor: 'red',
     width: '100%',
-    paddingHorizontal: 50,
+    paddingHorizontal: 30,
+    paddingVertical: 10,
     alignItems: 'flex-end',
+    flexDirection: "row"
   },
   scrollView: {
     backgroundColor: Colors.lighter,
     height: '100%',
   },
   textInput: {
-    marginTop: 20,
     height: 40,
     alignSelf: 'center',
-    width: '100%',
+    width: '80%',
+
     borderColor: 'gray',
-    borderWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderLeftWidth: 1,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
   },
   sendBtn: {
-    marginTop: 5,
-    borderRadius: 10,
+    backgroundColor: '#00ff00',
     height: 40,
-    width: 100,
-    backgroundColor: 'green',
     alignItems: 'center',
     justifyContent: 'center',
+
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    borderEndWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+
   },
   text: {
     fontSize: 26,
