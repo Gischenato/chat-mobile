@@ -13,9 +13,10 @@ const App = () => {
 
   useEffect(() => {
     const socket = io('http://localhost:3000');
-    socket.on('connect', () => {
-      console.log('connected');
-    });
+    socket.on('connect', () => {console.log('connected')});
+    socket.on('chat message', msg => {
+      setMessages(old => [...old, msg]);
+    })
     setSocket(socket)
   }, [])
 
@@ -38,6 +39,10 @@ const App = () => {
             <Text style={styles.text}>Enviar</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.messages}>
+          <Text>{messages.length}</Text>
+          {messages.map((msg, index) => <Text key={index}>{msg}</Text>)}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -45,7 +50,6 @@ const App = () => {
 
 const styles = StyleSheet.create({
   input: {
-    // backgroundColor: 'red',
     width: '100%',
     paddingHorizontal: 30,
     paddingVertical: 10,
@@ -84,6 +88,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 26,
     color: 'black'
+  },
+  messages:{
+    padding: 50,
+    height: '100%',
+    width: '100%',
   }
 });
 
