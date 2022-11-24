@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, TextInput, View, StatusBar, Text} from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import io, {Socket} from 'socket.io-client'
@@ -8,6 +8,7 @@ const App = () => {
   StatusBar.setBarStyle('dark-content');
 
   const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState<string[]>([]);
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const App = () => {
     socket.emit('chat message', message);
     setMessage('');
   }
+
   return (
     <SafeAreaView>
       <ScrollView style={styles.scrollView}>

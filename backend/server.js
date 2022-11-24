@@ -10,7 +10,10 @@ const port = 3000
 
 io.on("connection", socket => {
     console.log('New client connected')
-    socket.on('chat message', msg => {console.log(msg)})
+    socket.on('chat message', msg => {
+        console.log(msg)
+        io.emit('chat message', msg)
+    })
 })
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
