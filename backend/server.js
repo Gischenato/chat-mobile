@@ -1,6 +1,7 @@
 import express from 'express';
 import { Server } from 'socket.io' 
 import http from 'http'
+import { isPromise } from 'util/types';
 
 
 const app = express();
@@ -14,6 +15,10 @@ io.on("connection", socket => {
         console.log(msg)
         io.emit('chat message', msg)
     })
+})
+
+io.off("chat message", socket => {
+    console.log('Client disconnected')
 })
 
 server.listen(port, () => console.log(`Listening on port ${port}`));

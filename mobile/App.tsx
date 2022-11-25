@@ -12,13 +12,25 @@ const App = () => {
   const [socket, setSocket] = useState<Socket | undefined>(undefined);
 
   useEffect(() => {
-    const socket = io('http://localhost:3000');
-    socket.on('connect', () => {console.log('connected')});
-    socket.on('chat message', msg => {
-      setMessages(old => [...old, msg]);
-    })
-    setSocket(socket)
+    if (!socket) {
+      const newSocket = io('http://localhost:3000');
+      setSocket(newSocket);
+    }
+    return () => {
+      console.log('SAINDO');
+      if(socket) {
+        socket.off('chat message');
+      }
+    }
   }, [])
+
+  useEffect(() => {
+    if(socket) {
+      socket.on('chat message', (message: string) => {
+        setMessages(oldMessages => [...oldMessages, message]);
+      })
+    }
+  }, [socket])
 
   const sendMessage = () => {
     if (!socket) return
@@ -41,7 +53,7 @@ const App = () => {
         </View>
         <View style={styles.messages}>
           <Text>{messages.length}</Text>
-          {messages.map((msg, index) => <Text key={index}>{msg}</Text>)}
+          {messages.map((msg, index) => <Text style={styles.textMessages} key={index}>{msg}</Text>)}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -61,6 +73,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   textInput: {
+    color: 'black',
     height: 40,
     alignSelf: 'center',
     width: '80%',
@@ -93,6 +106,9 @@ const styles = StyleSheet.create({
     padding: 50,
     height: '100%',
     width: '100%',
+  },
+  textMessages: {
+    color: 'black',
   }
 });
 
